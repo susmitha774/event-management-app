@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Event</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        /* General Styles */
+        body {
+            font-family: Arial, sans-serif;
+            background: url('background.jpg') no-repeat center center/cover;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Navbar */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: red;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            z-index: 1000;
+        }
+        .nav-right a {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 16px;
+        }
+        .nav-right a:hover {
+            text-decoration: underline;
+        }
+
+        /* Form Container */
+        .container {
+            width: 50%;
+            background: white;
+            padding: 20px;
+            margin: 100px auto;
+            border-radius: 8px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            width: 100%;
+            background-color: #ddd;
+            height: 5px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .progress-bar {
+            height: 5px;
+            background: red;
+            width: 0%;
+            border-radius: 5px;
+            transition: width 0.3s ease-in-out;
+        }
+
+        /* Form Layout */
+        .form-container {
+            display: flex;
+            flex-direction: column;
+        }
+        .input-group {
+            width: 100%;
+            margin-bottom: 15px;
+        }
+        textarea {
+            width: 100%;
+            height: 80px;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+        input:focus, textarea:focus {
+            border-color: red;
+            box-shadow: 0px 0px 8px rgba(255, 0, 0, 0.5);
+        }
+
+        /* Budget Section */
+        .budget-section {
+            width: 100%;
+            margin-top: 20px;
+        }
+        .budget-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .budget-item input {
+            width: 50%;
+        }
+
+        /* Button */
+        .submit-btn {
+            width: 100%;
+            padding: 12px;
+            background: red;
+            color: white;
+            font-size: 18px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .submit-btn:hover {
+            background: darkred;
+            transform: scale(1.05);
+        }
+    </style>
+
+</head>
+<body>
+<!-- Video Background -->
+<video autoplay loop muted playsinline style="position: fixed; top: 0; left: 0; width: 100%; height: 100vh; object-fit: cover; z-index: -1;">
+    <source src="fireworks.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+</video>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-left">Event Management System</div>
+        <div class="nav-right">
+            <a href="#">About Us</a>
+            <a href="#">Contact Us</a>
+        </div>
+    </nav>
+
+    <!-- Edit Event Form -->
+    <div class="container">
+        <div class="form-header">
+            <h2>Edit Your Event</h2>
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+        </div>
+
+        <form id="editEventForm">
+            <div class="form-container">
+                <div class="input-group">
+                    <label><i class="fas fa-calendar"></i> Event Name</label>
+                    <input type="text" id="eventName" placeholder="Enter event name" required>
+                </div>
+
+                <div class="input-group">
+                    <label><i class="fas fa-clock"></i> Date & Time</label>
+                    <input type="datetime-local" id="eventDate" required>
+                </div>
+
+                <div class="input-group">
+                    <label><i class="fas fa-map-marker-alt"></i> Venue</label>
+                    <input type="text" id="venue" placeholder="Enter venue" required>
+                </div>
+
+                <div class="input-group">
+                    <label><i class="fas fa-align-left"></i> Description</label>
+                    <textarea id="description" placeholder="Describe your event..." required></textarea>
+                </div>
+
+                <div class="input-group">
+                    <label><i class="fas fa-users"></i> Max No. of Students</label>
+                    <input type="number" id="maxStudents" min="1" placeholder="Enter max participants" required>
+                </div>
+
+                <div class="budget-section">
+                    <label><i class="fas fa-coins"></i> Total Budget</label>
+    <input type="number" id="totalBudgetInput" placeholder="₹ 0" required>
+                    <p id="totalBudget">Total: ₹ 0</p>
+                </div>
+
+                <button type="submit" class="submit-btn">UPDATE EVENT</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+    // Load existing event details
+    document.addEventListener("DOMContentLoaded", function () {
+    const eventId = localStorage.getItem("editEventId");
+    const token = localStorage.getItem("token");
+
+    if (!eventId || !token) {
+        alert("Invalid request!");
+        window.location.href = "organizerDashboard.html";
+        return;
+    }
+
+    fetch(`http://localhost:3000/get-event/${eventId}`, {
+        method: "GET",
+        headers: { "Authorization": `Bearer ${token}` }
+    })
+    .then(response => response.json())
+    .then(event => {
+        document.getElementById("eventName").value = event.event_name;
+        document.getElementById("eventDate").value = event.date_time;
+        document.getElementById("venue").value = event.venue;
+        document.getElementById("description").value = event.description;
+        document.getElementById("maxStudents").value = event.max_students;
+        document.getElementById("totalBudgetInput").value = event.total_budget;
+    })
+    .catch(error => console.error("Error fetching event details:", error));
+});
+
+// Handle update event
+document.getElementById("editEventForm").addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    const eventId = localStorage.getItem("editEventId");  // Ensure this value is set
+    const token = localStorage.getItem("token");         // Ensure token exists
+
+    if (!eventId || !token) {
+        alert("Unauthorized request!");
+        return;
+    }
+
+    const updatedEvent = {
+        event_name: document.getElementById("eventName").value,
+        date_time: document.getElementById("eventDate").value,
+        venue: document.getElementById("venue").value,
+        description: document.getElementById("description").value,
+        max_students: parseInt(document.getElementById("maxStudents").value, 10),
+        total_budget: parseFloat(document.getElementById("totalBudgetInput").value) || 0
+    };
+
+    try {
+        const response = await fetch(`http://localhost:3000/update-event/${eventId}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify(updatedEvent)
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        alert("Event updated successfully!");
+        window.location.href = "organizerDashboard.html";
+    } catch (error) {
+        console.error("Error updating event:", error);
+        alert("Failed to update event. Check console for details.");
+    }
+});
+
+
+</script>
+
+</body>
+</html>

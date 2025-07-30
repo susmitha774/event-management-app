@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Expense Tracker</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      font-family: Arial, sans-serif;
+      overflow: hidden;
+    }
+    
+    /* New header style to match your image */
+    header {
+      background-color: #e63946;
+      color: #fff;
+      padding: 25px 30px;
+      text-align: center;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    header h1 {
+      margin: 0;
+      flex-grow: 1;
+      text-align: center;
+    }
+    
+    header button {
+      background-color: #333;
+      color: #fff;
+      border: none;
+      padding: 8px 20px;
+      cursor: pointer;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+    
+    .video-background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      object-fit: cover;
+    }
+    .content-overlay {
+      position: absolute;
+      top: 50%; /* Adjusted to account for header */
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 80%;
+      max-width: 900px;
+      background-color: rgba(255, 255, 255, 0.95);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+      overflow-y: auto;
+      max-height: 70%;
+    }
+    h1 {
+      text-align: center;
+    }
+    .input-section {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    input, button {
+      padding: 10px;
+      margin: 5px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+    input {
+      flex: 1;
+      min-width: 150px;
+    }
+    button {
+      background-color: #e63946;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #218838;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 12px;
+      text-align: center;
+    }
+    th {
+      background-color: #f8f9fa;
+    }
+    .totals {
+      margin-top: 20px;
+      font-size: 18px;
+    }
+    .button-container {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+  </style>
+</head>
+<body>
+  <!-- New header matching your image -->
+  <header>
+    <h1></h1>
+  </header>
+
+  <video autoplay muted loop class="video-background">
+    <source src="money.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+
+  <div class="content-overlay">
+    <h1>Expense Tracker</h1>
+    
+
+    <table>
+      <thead>
+        <tr>
+          <th>ExpenseID</th>
+          <th>Category</th>
+          <th>Actual (₹)</th>
+          <th>Total Amount Spent</th>
+        </tr>
+      </thead>
+      <tbody id="expenseTableBody"></tbody>
+    </table>
+
+    <div class="totals">
+      <p>Total Budget: <span id="totalBudget">0.00</span></p>
+      <p>Total Amount Spent: <span id="totalActual">0.00</span></p>
+      <p>Remaining Budget: <span id="remainingBudget">0.00</span></p>
+    </div>
+    <div class="button-container">
+      <button onclick="goToDashboard()">OK</button>
+      <button class="download-btn" style="background-color: #6495ED;" onclick="downloadExpenses()">Download Expenses</button>
+  </div>
+  </div>
+
+  <script>
+    let expenses = [];
+    let currentEventId = localStorage.getItem("currentEventId");
+    let totalBudget = parseFloat(localStorage.getItem("totalBudget")) || 0;
+    let initialSpent = 0;
+
+    if (!currentEventId) {
+        alert("No event selected.");
+        window.location.href = "organizerDashboard.html";  // Redirect to dashboard if no event is selected
+    }
+
+    document.getElementById("totalBudget").innerText = totalBudget.toFixed(2);
+    document.getElementById("totalActual").innerText = initialSpent.toFixed(2);
+    document.getElementById("remainingBudget").innerText = totalBudget.toFixed(2);
+
+    async function loadEventExpenses() {
+    try {
+        console.log("Fetching expenses for event:", currentEventId);
+        
+        const response = await fetch(`http://localhost:3000/expenses/${currentEventId}`);
+
+        // Check for HTTP errors
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log("Fetched expenses:", data);
+
+        if (!Array.isArray(data) || data.length === 0) {
+            console.log("No expenses found for this event.");
+            return;
+        }
+
+        updateTable(data);
+    } catch (error) {
+        console.error("Error loading expenses:", error);
+    }
+}
+
+
+
+
+
+    document.addEventListener("DOMContentLoaded", loadEventExpenses);
+    async function addExpense() {
+    const category = document.getElementById("category").value;
+    const actualSpent = parseFloat(document.getElementById("actual").value);
+    const eventId = localStorage.getItem("currentEventId");
+
+    if (!category || isNaN(actualSpent)) {
+        alert("Please enter valid details");
+        return;
+    }
+
+    try {
+        const response = await fetch("http://localhost:3000/add-expense", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${localStorage.getItem("token")}`
+            },
+            body: JSON.stringify({ event_id: eventId, category: category, actual_spent: actualSpent })
+        });
+
+        const data = await response.json();
+        console.log("Add Expense Response:", data); // Debugging
+
+        if (data.success) {
+            alert("Expense added successfully!");
+            loadEventExpenses(); // Reload the table
+        } else {
+            alert("Failed to add expense: " + data.error);
+        }
+    } catch (error) {
+        console.error("Error adding expense:", error);
+    }
+}
+
+function updateTable(expenses) {
+    const tableBody = document.getElementById("expenseTableBody");
+
+    // Check if the tableBody exists
+    if (!tableBody) {
+        console.error("Error: Table body not found. Ensure the HTML contains <tbody id='expenseTableBody'>");
+        return;
+    }
+
+    // Handle case when there are no expenses
+    if (!Array.isArray(expenses) || expenses.length === 0) {
+        console.warn("No expenses found for this event.");
+        tableBody.innerHTML = "<tr><td colspan='5'>No expenses found</td></tr>";
+        return;
+    }
+
+    tableBody.innerHTML = ""; // Clear previous entries
+
+    expenses.forEach(expense => {
+        const row = `<tr>
+                        <td>${expense.id}</td>
+                        <td>${expense.category}</td>
+                        <td>${expense.actual_spent}</td>
+                        <td>${expense.total_amount_spent}</td>
+                        <td>
+                            <button onclick="deleteExpense(${expense.id})">Delete</button>
+                        </td>
+                     </tr>`;
+        tableBody.innerHTML += row;
+    });
+}
+
+
+async function updateTotals() {
+    try {
+        console.log("Fetching latest budget and expense details...");
+
+        // Ensure currentEventId is defined
+        if (typeof currentEventId === "undefined" || currentEventId === null) {
+            console.error("Error: currentEventId is not defined or null.");
+            return;
+        }
+
+        // Fetch data from backend with error handling
+        let response;
+        try {
+            response = await fetch(`http://localhost:3000/expenses/totals/${currentEventId}`);
+        } catch (networkError) {
+            console.error("Network error:", networkError);
+            alert("Network issue: Unable to fetch budget details.");
+            return;
+        }
+
+        if (!response.ok) {
+            throw new Error(`Failed to fetch data. Status: ${response.status}`);
+        }
+
+        // Parse JSON response
+        const data = await response.json();
+        console.log("Received updated values:", data);
+
+        // Extract values with defaults
+        const totalBudget = Number(data.totalBudget) || 0;
+        const totalActual = Number(data.totalActual) || 0;
+        const remainingBudget = totalBudget - totalActual;
+
+        // Get UI elements
+        const totalBudgetElement = document.getElementById("totalBudget");
+        const totalActualElement = document.getElementById("totalActual");
+        const remainingBudgetElement = document.getElementById("remainingBudget");
+
+        // Ensure elements exist
+        if (!totalBudgetElement || !totalActualElement || !remainingBudgetElement) {
+            console.error("Error: One or more UI elements are missing.");
+            return;
+        }
+
+        // Update UI dynamically (using textContent for better performance)
+        totalBudgetElement.textContent = `₹${totalBudget.toFixed(2)}`;
+        totalActualElement.textContent = `₹${totalActual.toFixed(2)}`;
+        remainingBudgetElement.textContent = `₹${remainingBudget.toFixed(2)}`;
+
+        console.log("UI updated successfully.");
+
+    } catch (error) {
+        console.error("Error updating totals:", error);
+        alert("Failed to fetch budget details. Check console for more info.");
+    }
+}
+
+// Call function on page load
+window.onload = updateTotals;
+
+
+
+async function deleteExpense(expenseId) {
+    if (!confirm("Are you sure you want to delete this expense?")) return;
+
+    try {
+        const response = await fetch(`http://localhost:3000/delete-expense/${expenseId}`, {
+            method: "DELETE",
+            headers: {
+                "Authorization": `Bearer ${localStorage.getItem("token")}`
+            }
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+            alert("Expense deleted successfully!");
+            loadEventExpenses(); // Reload expenses after deletion
+        } else {
+            alert("Failed to delete expense: " + data.error);
+        }
+    } catch (error) {
+        console.error("Error deleting expense:", error);
+    }
+}
+
+
+    function clearInputs() {
+        document.getElementById("category").value = "";
+        document.getElementById("actual").value = "";
+    }
+
+    // Ensure expenses are loaded when the page is opened
+    document.addEventListener("DOMContentLoaded", loadEventExpenses);
+
+    // Save updated values when navigating away
+    window.onbeforeunload = function () {
+    localStorage.setItem("totalActual", initialSpent + expenses.reduce((sum, exp) => sum + exp.actual, 0));
+    localStorage.setItem  ("remainingBudget", totalBudget - (initialSpent + expenses.reduce((sum, exp) => sum + exp.actual, 0)));
+};
+
+    function goToDashboard() {
+        window.location.href = "adminDashboard.html";
+    }
+    async function downloadExpenses() {
+    try {
+        const eventId = localStorage.getItem("currentEventId");
+        if (!eventId) {
+            alert("No event selected");
+            return;
+        }
+
+        const token = localStorage.getItem("token");
+        const response = await fetch(`http://localhost:3000/expenses/${eventId}`, {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const expenses = await response.json();
+        
+        if (!expenses || expenses.length === 0) {
+            alert("No expenses to download");
+            return;
+        }
+
+        // Create CSV content
+        let csvContent = "Expense ID,Category,Actual Spent (₹),Total Amount Spent\n";
+        expenses.forEach(expense => {
+            csvContent += `${expense.id},"${expense.category}",${expense.actual_spent},${expense.total_amount_spent}\n`;
+        });
+
+        // Create download link
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.setAttribute('href', url);
+        link.setAttribute('download', `expenses_event_${eventId}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    } catch (error) {
+        console.error("Error downloading expenses:", error);
+        alert("Failed to download expenses: " + error.message);
+    }
+}
+</script>
+
+</body>
+</html>

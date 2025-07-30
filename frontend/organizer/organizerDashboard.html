@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard | Event Manager</title>
+    <style>
+        body {
+            background-color: #f8f8f8;
+            color: #333;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        header {
+            background-color: #e63946;
+            color: #fff;
+            padding: 15px 20px;
+            text-align: center;
+        }
+
+        header button {
+            background-color: #333;
+            color: #fff;
+            border: none;
+            padding: 8px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        main {
+            padding: 20px;
+        }
+
+        h2, h3 {
+            color: #e63946;
+        }
+
+        section {
+            background-color: #fff;
+            border: 2px solid #e63946;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .event-card {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .pending-event {
+            border-left: 5px solid orange;
+        }
+
+        .approved-event {
+            border-left: 5px solid green;
+        }
+
+        .event-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+/* Add to your existing CSS */
+.rejected-event {
+    border-left: 5px solid red;
+}
+
+#rejectedEventsList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+.rejected-event {
+    border-left: 5px solid red;
+    background-color: #ffeeee; /* Light red background */
+}
+
+.rejected-event p[strong*="Reason"] {
+    color: #d32f2f; /* Dark red for reason text */
+    font-style: italic;
+}
+/* Add this to the existing styles */
+#eventList, #pendingEventsList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.event-card {
+    flex: 1 1 300px; /* Grow, shrink, base width */
+    min-width: 300px;
+    max-width: 400px;
+}
+#eventList {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+@media (max-width: 1200px) {
+    #eventList {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    #eventList {
+        grid-template-columns: 1fr;
+    }
+}
+
+.event-card {
+    /* Keep your existing card styles */
+    width: 100%; /* Remove any fixed width if previously set */
+}
+
+
+.event-buttons button {
+    padding: 4px 10px;
+    font-size: 14px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+}
+
+.event-buttons .edit-btn {
+    background-color: #e63946;
+    color: white;
+    box-shadow: 0 3px 6px rgba(230, 57, 70, 0.3);
+}
+
+.event-buttons .edit-btn:hover {
+    background-color: #e63946;
+    transform: scale(1.05);
+}
+
+.event-buttons .cancel-btn {
+    background-color: #e63946; /* Dark Red */
+    color: white;
+    box-shadow: 0 3px 6px rgba(139, 0, 0, 0.3);
+}
+.event-buttons .cancel-btn:hover {
+    background-color: #e63946; /* Slightly lighter on hover */
+    transform: scale(1.05);
+}
+
+.create-event-btn {
+    background-color: #e63946; /* Same Light Red as Edit */
+    color: white;
+    padding: 12px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    display: block;
+    width: 200px;
+    margin: 10px 0; /* Adjusted margin */
+}
+
+
+.create-event-btn:hover {
+    background-color: #c32f3b;
+    transform: scale(1.05);
+}
+.track-expense-btn {
+    background-color: #e63946; /* Blue color */
+    color: white;
+    padding: 10px 18px;
+    font-size: 14px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 3px 6px rgba(0, 123, 255, 0.3);
+}
+
+.track-expense-btn:hover {
+    background-color: #e63946; /* Darker blue on hover */
+    transform: scale(1.05);
+}
+.view-students-btn {
+    background-color: #e63946; /* Blue color */
+    color: white;
+    padding: 10px 18px;
+    font-size: 14px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 3px 6px rgba(0, 123, 255, 0.3);
+}
+
+.view-students-btn:hover {
+    background-color: #e63946; /* Darker blue on hover */
+    transform: scale(1.05);
+}
+/* Add to your existing CSS */
+.report-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.report-card {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.report-actions {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+#downloadOrganizerPDF, #refreshOrganizerReports {
+    background-color: #e63946;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#downloadOrganizerPDF:disabled, #refreshOrganizerReports:disabled {
+    background-color: #cccccc;
+    cursor: wait;
+}
+/* Add to your existing CSS */
+#organizerRegistrationStats table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+#organizerRegistrationStats th, 
+#organizerRegistrationStats td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+#organizerRegistrationStats th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+#organizerRegistrationStats tr:hover {
+    background-color: #f5f5f5;
+}
+/* Add these styles to your existing CSS */
+/* Add/update these styles in your existing CSS */
+.report-container {
+    display: flex;
+    gap: 20px;
+    margin-top: 20px;
+    overflow-x: auto; /* Allows horizontal scrolling if needed */
+    padding-bottom: 10px; /* Space for scrollbar */
+}
+
+.report-card {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    flex: 1;
+    min-width: 300px; /* Minimum width for each card */
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+    .report-container {
+        flex-wrap: wrap;
+    }
+    .report-card {
+        min-width: calc(50% - 20px);
+    }
+}
+
+@media (max-width: 768px) {
+    .report-card {
+        min-width: 100%;
+    }
+}
+
+/* Keep your existing table and list styles */
+.report-card ul {
+    list-style-type: none;
+    padding-left: 0;
+    margin: 10px 0;
+}
+
+.report-card ul li {
+    padding: 6px 0;
+}
+
+.report-card table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    font-size: 14px;
+}
+
+.report-card th, 
+.report-card td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.report-card th {
+    background-color: #f8f8f8;
+    font-weight: bold;
+}
+.report-actions button {
+    background-color: #e63946;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+.report-actions button:hover {
+    background-color: #c32f3b;
+}
+
+.report-actions button:disabled {
+    background-color: #cccccc;
+    cursor: wait;
+}
+#downloadOrganizerCSV {
+    background-color: #4CAF50; /* Green color for CSV button */
+}
+
+#downloadOrganizerCSV:hover {
+    background-color: #3e8e41;
+}
+
+.report-actions button {
+    transition: all 0.2s ease;
+}
+
+.report-actions button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Event Manager Dashboard</h1>
+        <button id="logoutBtn">Logout</button>
+    </header>
+
+    <main>
+        <div style="display: flex; justify-content: center; margin: 5px 0;margin-top: 1px;">
+            <button 
+                class="create-event-btn" 
+                onclick="window.location.href='createEvent.html'"
+                style="
+                    padding: 8px 16px;
+                    font-size: 14px;
+                    background: #e63946;
+                    color: white;
+                    border: none;
+                    border-radius: 6px;
+                    cursor: pointer;
+                    transition: all 0.2s;
+                    min-width: 150px;">
+                + Create New Event
+            </button>
+        </div>
+        <h2>Welcome, <span id="usernameDisplay"></span> (<span id="roleDisplay"></span>)</h2>
+
+        <!-- Pending Events -->
+        <section id="pendingEventsSection" style="display: none;">
+            <h3>Waiting for Approval</h3>
+            <div id="pendingEventsList">Loading...</div>
+        </section>
+        <!-- Add this after the Pending Events section -->
+        
+
+        <!-- Ongoing Events -->
+        <section id="eventSection">
+            <h3>Ongoing Events</h3>
+            <div id="eventList">No upcoming events yet.</div>
+        </section>
+        <section id="rejectedEventsSection" style="display: none;">
+            <h3>Rejected Events</h3>
+            <div id="rejectedEventsList">Loading...</div>
+       </section>
+
+        <!-- Organizer Controls -->
+        <section id="organizerControls" style="display: none;">
+      
+        </section>
+        <!-- Add this section below your existing sections -->
+        <section id="organizerReportSection" style="display: none;">
+            <h3>My Event Reports</h3>
+            <!-- In the organizerReportSection section, fix the opening div tag -->
+        <div class="report-actions">
+            <button id="refreshOrganizerReports">Refresh Reports</button>
+            <button id="downloadOrganizerCSV">Download as CSV</button>
+        </div>
+            <div class="report-container">
+                <div class="report-card">
+                    <h4>Event Status</h4>
+                    <div id="organizerStatusChart"></div>
+                </div>
+                
+                <div class="report-card">
+                    <h4>Monthly Events</h4>
+                    <div id="organizerMonthlyChart"></div>
+                </div>
+                
+                <div class="report-card">
+                    <h4>Top Events</h4>
+                    <div id="organizerRegistrationStats"></div>
+                </div>
+            </div>
+            <section id="organizerReportSection" style="display: none;">
+    <h3>My Event Reports</h3>
+    <div class="report-actions">
+        <button id="refreshOrganizerReports">Refresh Reports</button>
+        <button id="downloadOrganizerCSV">Download as CSV</button>
+        <!-- Keep your PDF button if you want -->
+        <button id="downloadOrganizerPDF">Download as PDF</button>
+    </div>
+    <div class="report-container">
+        <!-- ... rest of your report section ... -->
+    </div>
+</section>
+        </section>
+        <section id="organizerReportSection" style="display: none;">
+            <h3>My Event Reports</h3>
+            <div class="report-actions">
+                <button id="refreshOrganizerReports">Refresh Reports</button>
+                <button id="downloadOrganizerCSV">Download as CSV</button>
+                <!-- Keep your PDF button if you want -->
+                <button id="downloadOrganizerPDF">Download as PDF</button>
+            </div>
+            <div class="report-container">
+                <!-- ... rest of your report section ... -->
+            </div>
+        </section>
+    </main>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    loadUserDetails();
+    displayEvents();
+});
+
+function loadUserDetails() {
+    const name = localStorage.getItem("name") || "Guest";  
+    const role = localStorage.getItem("role") || "Visitor";
+
+    document.getElementById("usernameDisplay").textContent = name;
+    document.getElementById("roleDisplay").textContent = role;
+
+    if (role.toLowerCase() === "organizer") {
+        document.getElementById("pendingEventsSection").style.display = "block"; 
+        document.getElementById("rejectedEventsSection").style.display = "block"; 
+        loadPendingEvents();
+        loadRejectedEvents(); // Add this line
+    } else {
+        document.getElementById("pendingEventsSection").style.display = "none"; 
+        document.getElementById("rejectedEventsSection").style.display = "none"; 
+    }
+}
+
+document.getElementById("logoutBtn").addEventListener("click", () => {
+    localStorage.clear();
+    window.location.href = "../login.html"; 
+});
+function loadRejectedEvents() {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    fetch("http://localhost:3000/organizer-rejected-events", { 
+        method: "GET",
+        headers: { "Authorization": `Bearer ${token}` }
+    })
+    .then(response => response.json())
+    .then(events => {
+        const rejectedList = document.getElementById("rejectedEventsList");
+        rejectedList.innerHTML = ""; 
+
+        if (events.length === 0) {
+            rejectedList.innerHTML = "<p>No rejected events.</p>";
+            return;
+        }
+
+        events.forEach(event => {
+            const eventItem = document.createElement("div");
+            eventItem.classList.add("event-card", "rejected-event");
+            eventItem.innerHTML = `
+                <h4>${event.event_name}</h4>
+                <p><strong>Date:</strong> ${new Date(event.date_time).toLocaleString()}</p>
+                <p><strong>Venue:</strong> ${event.venue}</p>
+                <p><strong>Reason for Rejection:</strong> ${event.rejection_reason || "No reason provided"}</p>
+                <p><strong>Total Budget:</strong> ₹${event.total_budget}</p>
+                <p><strong>Description:</strong> ${event.description}</p>
+                <p><strong>Max Students:</strong> ${event.max_students}</p>
+                <p><strong>Created At:</strong> ${new Date(event.created_at).toLocaleString()}</p>
+                <p style="color: red; font-weight: bold;">Status: Rejected</p>
+                <div class="event-buttons">
+                    <button class="cancel-btn" onclick="deleteEvent(${event.id})">Delete</button>
+                </div>
+            `;
+            rejectedList.appendChild(eventItem);
+        });
+    })
+    .catch(error => console.error("Error fetching rejected events:", error));
+}
+function deleteEvent(eventId) {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    if (!confirm("Are you sure you want to permanently delete this rejected event?")) return;
+
+    fetch(`http://localhost:3000/cancel-event/${eventId}`, {
+        method: "DELETE",
+        headers: {
+            "Authorization": `Bearer ${token}`
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert(data.message);
+        loadRejectedEvents(); // Refresh the rejected events list
+    })
+    .catch(error => console.error("Error deleting event:", error));
+}
+// Function to display approved (ongoing) events
+function displayEvents() {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    fetch("http://localhost:3000/my-approved-events", {  
+        method: "GET",
+        headers: { "Authorization": `Bearer ${token}` }
+    })
+    .then(response => response.json())
+    .then(events => {
+        const eventList = document.getElementById("eventList");
+        eventList.innerHTML = "";
+
+        const currentDate = new Date(); 
+        const filteredEvents = events.filter(event => new Date(event.date_time) > currentDate);
+
+        if (filteredEvents.length === 0) {
+            eventList.innerHTML = "<p>No upcoming events available.</p>";
+            return;
+        }
+
+        filteredEvents.forEach(event => {
+            const eventItem = document.createElement("div");
+            eventItem.classList.add("event-card", "approved-event");
+            eventItem.innerHTML = `
+                <h4>${event.event_name}</h4>
+                <p><strong>Date:</strong> ${new Date(event.date_time).toLocaleString()}</p>
+                <p><strong>Venue:</strong> ${event.venue}</p>
+                <p><strong>Description:</strong> ${event.description}</p>
+                <p><strong>Students:</strong> ${event.registered_count}/${event.max_students}</p>
+                <p><strong>Created At:</strong> ${new Date(event.created_at).toLocaleString()}</p>
+                <p><strong>Total Budget:</strong> ₹${event.total_budget}</p>
+                <p style="color: green; font-weight: bold;">Status: Approved</p>
+                <div class="event-buttons">
+                    <button ${event.status !== 'pending' ? 'disabled style="background-color: grey; cursor: not-allowed;"' : ''} 
+                            class="edit-btn" 
+                            onclick="${event.status === 'pending' ? `editEvent(${event.id})` : 'return false'}">
+                        Edit
+                    </button>
+                    <button class="cancel-btn" onclick="cancelEvent(${event.id})">Cancel</button>
+                    <button class="track-expense-btn" style="background-color: #4CAF50;" onclick="trackExpense(${event.id})">Track Expense</button>
+                    <button class="view-students-btn" style="background-color: #6495ED;" onclick="viewRegisteredStudents('${event.id}')">View Registered Students</button>
+                </div>
+            `;
+            eventList.appendChild(eventItem);
+        });
+    })
+    .catch(error => console.error("Error fetching events:", error));
+}
+
+// Function to fetch and display pending events
+function loadPendingEvents() {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    fetch("http://localhost:3000/organizer-pending-events", { 
+        method: "GET",
+        headers: { "Authorization": `Bearer ${token}` }
+    })
+    .then(response => response.json())
+    .then(events => {
+        const pendingList = document.getElementById("pendingEventsList");
+        pendingList.innerHTML = ""; 
+
+        const currentDate = new Date();
+        // Filter out past events that are still pending
+        const upcomingPendingEvents = events.filter(event => new Date(event.date_time) > currentDate);
+
+        if (upcomingPendingEvents.length === 0) {
+            pendingList.innerHTML = "<p>No pending events.</p>";
+            return;
+        }
+
+        upcomingPendingEvents.forEach(event => {
+            const eventItem = document.createElement("div");
+            eventItem.classList.add("event-card", "pending-event");
+            eventItem.innerHTML = `
+                <h4>${event.event_name}</h4>
+                <p><strong>Date:</strong> ${new Date(event.date_time).toLocaleString()}</p>
+                <p><strong>Venue:</strong> ${event.venue}</p>
+                <p><strong>Total Budget:</strong> ₹${event.total_budget}</p>
+                <p><strong>Description:</strong> ${event.description}</p>
+                <p><strong>Max Students:</strong> ${event.max_students}</p>
+                <p><strong>Created At:</strong> ${new Date(event.created_at).toLocaleString()}</p>
+                <p style="color: orange; font-weight: bold;">Status: Pending</p>
+                <div class="event-buttons">
+                    <button class="edit-btn" style="background-color: #4CAF50;" onclick="editEvent(${event.id})">Edit</button>
+                    <button class="cancel-btn" onclick="cancelEvent(${event.id})">Cancel</button>
+                </div>
+            `;
+            pendingList.appendChild(eventItem);
+        });
+    })
+    .catch(error => console.error("Error fetching pending events:", error));
+}
+// Function to handle edit event
+function editEvent(eventId) {
+    localStorage.setItem("editEventId", eventId);
+    window.location.href = "Edit.html"; 
+}
+
+// Function to handle cancel event
+function cancelEvent(eventId) {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    if (!confirm("Are you sure you want to cancel this event?")) return;
+
+    fetch(`http://localhost:3000/cancel-event/${eventId}`, {
+        method: "DELETE",
+        headers: {
+            "Authorization": `Bearer ${token}`
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert(data.message);
+        loadPendingEvents(); // Refresh the pending list
+        displayEvents(); // Refresh the approved list
+    })
+    .catch(error => console.error("Error canceling event:", error));
+}
+
+async function trackExpense(eventId) {
+    console.log("Clicked Track Expense with eventId:", eventId);
+    localStorage.setItem("currentEventId", eventId);
+
+    const token = localStorage.getItem("token");
+    
+    try {
+        const response = await fetch(`http://localhost:3000/event/${eventId}`, {
+            headers: { "Authorization": `Bearer ${token}` }
+        });
+
+        if (!response.ok) {
+            throw new Error(`API Response Status: ${response.status}`);
+        }
+
+        const event = await response.json();
+        localStorage.setItem("totalBudget", event.total_budget);
+        console.log("Opening trackExpense.html with totalBudget:", event.total_budget);
+        
+        window.location.href = "trackExpense.html";
+    } catch (error) {
+        console.error("Error:", error);
+        alert("Failed to load event details");
+    }
+}
+
+function viewRegisteredStudents(eventId) {
+    localStorage.setItem("currentEventId", eventId);
+    window.location.href = "viewRegisteredStudents.html"; // Redirect to the new page
+}
+// Add to your existing script
+document.addEventListener("DOMContentLoaded", () => {
+    loadUserDetails();
+    displayEvents();
+    // Add this line to show reports for organizers
+    if (localStorage.getItem("role") === "organizer") {
+        document.getElementById("organizerReportSection").style.display = "block";
+        fetchOrganizerReports();
+    }
+});
+
+// Add these new functions
+document.getElementById('refreshOrganizerReports').addEventListener('click', fetchOrganizerReports);
+document.getElementById('downloadOrganizerPDF').addEventListener('click', downloadOrganizerPDF);
+
+async function fetchOrganizerReports() {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    try {
+        const btn = document.getElementById('refreshOrganizerReports');
+        btn.disabled = true;
+        btn.textContent = 'Loading...';
+        
+        const response = await fetch("http://localhost:3000/organizer-event-reports", {
+            headers: { "Authorization": `Bearer ${token}` }
+        });
+        
+        if (!response.ok) throw new Error("Failed to fetch reports");
+        
+        const data = await response.json();
+        renderOrganizerStatusChart(data.statusCounts);
+        renderOrganizerMonthlyChart(data.monthlyEvents);
+        renderOrganizerRegistrationStats(data.registrationStats);
+        
+    } catch (error) {
+        console.error("Error loading reports:", error);
+        alert("Failed to load reports: " + error.message);
+    } finally {
+        const btn = document.getElementById('refreshOrganizerReports');
+        btn.disabled = false;
+        btn.textContent = 'Refresh Reports';
+    }
+}
+
+function renderOrganizerStatusChart(statusCounts) {
+    const container = document.getElementById('organizerStatusChart');
+    container.innerHTML = '';
+    
+    // Simple visualization (can replace with Chart.js)
+    let html = '<ul>';
+    statusCounts.forEach(item => {
+        html += `<li><strong>${item.status}:</strong> ${item.count} events</li>`;
+    });
+    html += '</ul>';
+    
+    container.innerHTML = html;
+}
+
+function renderOrganizerMonthlyChart(monthlyEvents) {
+    const container = document.getElementById('organizerMonthlyChart');
+    container.innerHTML = '';
+    
+    let html = '<ul>';
+    monthlyEvents.forEach(item => {
+        html += `<li><strong>${item.month}:</strong> ${item.event_count} events</li>`;
+    });
+    html += '</ul>';
+    
+    container.innerHTML = html;
+}
+// Add this new function
+function renderOrganizerRegistrationStats(stats) {
+    const container = document.getElementById('organizerRegistrationStats');
+    container.innerHTML = '';
+    
+    if (!stats || stats.length === 0) {
+        container.innerHTML = '<p>No registration data available</p>';
+        return;
+    }
+    
+    let html = `
+        <table>
+            <thead>
+                <tr>
+                    <th>Event</th>
+                    <th>Registered</th>
+                    <th>Capacity</th>
+                    <th>Fill %</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+    
+    stats.forEach(event => {
+        html += `
+            <tr>
+                <td>${event.event_name}</td>
+                <td>${event.registered_count}</td>
+                <td>${event.max_students}</td>
+                <td>${event.fill_percentage}%</td>
+            </tr>
+        `;
+    });
+    
+    html += `
+            </tbody>
+        </table>
+    `;
+    
+    container.innerHTML = html;
+}
+// Add this with your other event listeners
+document.getElementById('downloadOrganizerCSV').addEventListener('click', downloadOrganizerCSV);
+
+async function downloadOrganizerCSV() {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    try {
+        // Show loading state
+        const btn = document.getElementById('downloadOrganizerCSV');
+        btn.disabled = true;
+        btn.textContent = 'Generating...';
+
+        // Fetch the report data
+        const response = await fetch("http://localhost:3000/organizer-event-reports", {
+            headers: { "Authorization": `Bearer ${token}` }
+        });
+        
+        if (!response.ok) throw new Error("Failed to fetch reports");
+        
+        const data = await response.json();
+        
+        // Convert to CSV format
+        const csvContent = convertOrganizerDataToCSV(data);
+        
+        // Create download link
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `my-event-reports_${new Date().toISOString().slice(0,10)}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+    } catch (error) {
+        console.error("Error downloading reports:", error);
+        alert("Failed to download reports: " + error.message);
+    } finally {
+        // Reset button state
+        const btn = document.getElementById('downloadOrganizerCSV');
+        btn.disabled = false;
+        btn.textContent = 'Download as CSV';
+    }
+}
+
+function convertOrganizerDataToCSV(data) {
+    let csv = "My Event Reports\n\n";
+    
+    // Status Counts
+    csv += "Event Status Distribution\n";
+    csv += "Status,Count\n";
+    data.statusCounts.forEach(item => {
+        csv += `${item.status},${item.count}\n`;
+    });
+    
+    // Monthly Events
+    csv += "\nMonthly Events\n";
+    csv += "Month,Event Count\n";
+    data.monthlyEvents.forEach(item => {
+        csv += `${item.month},${item.event_count}\n`;
+    });
+    
+    // Registration Stats
+    csv += "\nTop Events by Registration\n";
+    csv += "Event Name,Registered,Capacity,Fill Percentage\n";
+    data.registrationStats.forEach(item => {
+        csv += `"${item.event_name.replace(/"/g, '""')}",${item.registered_count},${item.max_students},${item.fill_percentage}%\n`;
+    });
+    
+    return csv;
+}
+
+</script>
+</body>
+</html>

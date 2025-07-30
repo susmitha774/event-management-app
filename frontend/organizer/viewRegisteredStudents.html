@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Registered Students | Event Manager</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f8f8f8; margin: 0; padding: 20px; }
+        h2 { color: #e63946; text-align: center; }
+        .container { max-width: 800px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 10px; border: 1px solid #ddd; text-align: left; }
+        th { background-color: #e63946; color: white; }
+        button { background-color: #e63946; color: #fff; border: none; padding: 8px 15px; cursor: pointer; border-radius: 5px; font-weight: bold; transition: background 0.3s ease; }
+        button:hover { background-color: #b52d36; }
+        .back-btn { display: block; margin-top: 20px; text-align: center; }
+        .button-container {
+    display: flex;
+    justify-content: left;
+    gap: 10px;
+    margin-top: 30px; /* Adjust this value to control space between table and buttons */
+}
+        .download-btn {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background 0.3s ease;
+    margin-left: 10px;
+}
+
+.download-btn:hover {
+    background-color: #45a049;
+}
+    </style>
+    
+</head>
+<body>
+    <div class="container">
+        <h2>Registered Students</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>User ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Registered At</th>
+                </tr>
+            </thead>
+            <tbody id="studentsTable">
+                <tr><td colspan="4">Loading students...</td></tr>
+            </tbody>
+        </table>
+        <div class="button-container">
+            <button onclick="goBack()">Back to Dashboard</button>
+            <button class="download-btn" style="background-color: #6495ED;" onclick="downloadStudents()">Download List</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", fetchRegisteredStudents);
+
+        function fetchRegisteredStudents() {
+            const eventId = localStorage.getItem("currentEventId");
+            if (!eventId) {
+                alert("No event selected!");
+                window.location.href = "organizerDashboard.html";
+                return;
+            }
+
+            const token = localStorage.getItem("token");
+
+            fetch(`http://localhost:3000/event/${eventId}/registrations`, {
+                method: "GET",
+                headers: { "Authorization": `Bearer ${token}` }
+            })
+            .then(response => response.json())
+            .then(students => {
+                const studentsTable = document.getElementById("studentsTable");
+                studentsTable.innerHTML = "";
+
+                if (students.length === 0) {
+                    studentsTable.innerHTML = "<tr><td colspan='4'>No students registered for this event.</td></tr>";
+                    return;
+                }
+
+                students.forEach(student => {
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td>${student.user_id}</td>
+                        <td>${student.student_name}</td>
+                        <td>${student.email}</td>
+                        <td>${new Date(student.registered_at).toLocaleString()}</td>
+                    `;
+                    studentsTable.appendChild(row);
+                });
+            })
+            .catch(error => {
+                console.error("Error fetching registered students:", error);
+                document.getElementById("studentsTable").innerHTML = "<tr><td colspan='4'>Error loading data.</td></tr>";
+            });
+        }
+
+        function goBack() {
+            window.location.href = "organizerDashboard.html";
+        }
+        function downloadStudents() {
+    const eventId = localStorage.getItem("currentEventId");
+    const token = localStorage.getItem("token");
+
+    fetch(`http://localhost:3000/event/${eventId}/registrations`, {
+        method: "GET",
+        headers: { "Authorization": `Bearer ${token}` }
+    })
+    .then(response => response.json())
+    .then(students => {
+        if (students.length === 0) {
+            alert("No students to download");
+            return;
+        }
+
+        // Create CSV content
+        let csvContent = "User ID,Name,Email,Registered At\n";
+        students.forEach(student => {
+            csvContent += `${student.user_id},"${student.student_name}",${student.email},"${new Date(student.registered_at).toLocaleString()}"\n`;
+        });
+
+        // Create download link
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.setAttribute('href', url);
+        link.setAttribute('download', `registered_students_event_${eventId}.csv`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    })
+    .catch(error => {
+        console.error("Error downloading students:", error);
+        alert("Failed to download student list");
+    });
+}
+    </script>
+</body>
+</html>
