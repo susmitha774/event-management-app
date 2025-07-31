@@ -152,7 +152,7 @@
     }
 
     try {
-        const response = await fetch("http://localhost:3000/approved-events", {
+        const response = await fetch("/approved-events", {
             method: "GET",
             headers: { "Authorization": `Bearer ${token}` }
         });
@@ -163,7 +163,7 @@
 
         const eventsData = await response.json();
 
-        const registeredResponse = await fetch("http://localhost:3000/my-registrations", {
+        const registeredResponse = await fetch("/my-registrations", {
             method: "GET",
             headers: { "Authorization": `Bearer ${token}` }
         });
@@ -233,7 +233,7 @@ async function registerEvent(eventId) {
     }
 
     try {
-        const response = await fetch("http://localhost:3000/register-event", {
+        const response = await fetch("/register-event", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -270,7 +270,7 @@ async function cancelRegistration(eventId) {
     }
 
     try {
-        const response = await fetch("http://localhost:3000/cancel-registration", {
+        const response = await fetch("/cancel-registration", {
             method: "POST",  // Change from DELETE to POST
             headers: {
                 "Content-Type": "application/json",
