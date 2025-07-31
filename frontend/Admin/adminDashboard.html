@@ -139,7 +139,7 @@
             const token = localStorage.getItem("token");
             if (!token) return;
 
-            fetch("http://localhost:3000/pending-events", {
+            fetch("/pending-events", {
                 method: "GET",
                 headers: { "Authorization": `Bearer ${token}` }
             })
@@ -184,7 +184,7 @@
     const token = localStorage.getItem("token");
     if (!token) return;
 
-    fetch("http://localhost:3000/approved-events", {
+    fetch("/approved-events", {
         method: "GET",
         headers: { "Authorization": `Bearer ${token}` }
     })
@@ -222,7 +222,7 @@
             const token = localStorage.getItem("token");
             if (!token) return;
 
-            fetch(`http://localhost:3000/approve-event/${eventId}`, {
+            fetch(`/approve-event/${eventId}`, {
                 method: "PUT",
                 headers: { "Authorization": `Bearer ${token}` }
             })
@@ -242,7 +242,7 @@
     const reason = prompt("Please enter the reason for denying this event:");
     if (!reason) return; // User cancelled or didn't enter a reason
 
-    fetch(`http://localhost:3000/deny-event/${eventId}`, {
+    fetch(`/deny-event/${eventId}`, {
         method: "PUT",
         headers: { 
             "Authorization": `Bearer ${token}`,
@@ -264,7 +264,7 @@
     const token = localStorage.getItem("token");
     
     try {
-        const response = await fetch(`http://localhost:3000/event/${eventId}`, {
+        const response = await fetch(`/event/${eventId}`, {
             headers: { "Authorization": `Bearer ${token}` }
         });
 
@@ -303,7 +303,7 @@ function fetchEventReports() {
     const token = localStorage.getItem("token");
     if (!token) return;
 
-    fetch("http://localhost:3000/event-reports", {
+    fetch("/event-reports", {
         method: "GET",
         headers: { "Authorization": `Bearer ${token}` }
     })
@@ -369,7 +369,7 @@ async function downloadReports() {
     if (!token) return;
 
     try {
-        const response = await fetch("http://localhost:3000/event-reports", {
+        const response = await fetch("/event-reports", {
             method: "GET",
             headers: { "Authorization": `Bearer ${token}` }
         });
