@@ -71,7 +71,7 @@
 
             const token = localStorage.getItem("token");
 
-            fetch(`http://localhost:3000/event/${eventId}/registrations`, {
+            fetch(`/event/${eventId}/registrations`, {
                 method: "GET",
                 headers: { "Authorization": `Bearer ${token}` }
             })
@@ -109,7 +109,7 @@
     const eventId = localStorage.getItem("currentEventId");
     const token = localStorage.getItem("token");
 
-    fetch(`http://localhost:3000/event/${eventId}/registrations`, {
+    fetch(`/event/${eventId}/registrations`, {
         method: "GET",
         headers: { "Authorization": `Bearer ${token}` }
     })
