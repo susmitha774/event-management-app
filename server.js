@@ -13,8 +13,12 @@ app.use(express.urlencoded({ extended: true }));
 const JWT_SECRET = process.env.JWT_SECRET || "your_jwt_secret";
 const path = require("path");
 
-// Serve all static files (html/css/js) from 'frontend' folder
-app.use(express.static(path.join(__dirname, "frontend")));
+// Serve frontend static files
+app.use(express.static(path.join(__dirname, '../frontend')));
+
+// API routes (like /register, /login)
+app.use(express.json());
+// your login/register logic here...
 
 // When user visits "/", serve login.html
 app.get("/", (req, res) => {
