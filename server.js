@@ -23,10 +23,11 @@ app.get("/", (req, res) => {
 
 // ✅ Database Connection
 const db = mysql.createConnection({
-    host: "host.docker.internal",
-    user: "root",
-    password: "homePwd@123",
-    database: "event_management2"
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT, // Railway gives you a custom port
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME
 });
 
 db.connect((err) => {
