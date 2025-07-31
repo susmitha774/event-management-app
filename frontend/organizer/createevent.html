@@ -208,7 +208,7 @@
     
             try {
                 // Step 1: Fetch existing events
-                const eventsResponse = await fetch("http://localhost:3000/events", {
+                const eventsResponse = await fetch("events", {
                     method: "GET",
                     headers: {
                         "Authorization": `Bearer ${token}`,
@@ -231,7 +231,7 @@
                 }
     
                 // Step 3: If no conflict, proceed to create event
-                const response = await fetch("http://localhost:3000/create-event", {
+                const response = await fetch("/create-event", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
