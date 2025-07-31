@@ -13,10 +13,6 @@ app.use(express.urlencoded({ extended: true }));
 const JWT_SECRET = process.env.JWT_SECRET || "your_jwt_secret";
 const path = require("path");
 
-// Serve login page on root
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '../frontend', 'login.html'));
-});
 
 // Serve Admin Dashboard
 app.get('/admin/adminDashboard', (req, res) => {
