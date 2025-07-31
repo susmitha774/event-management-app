@@ -16,34 +16,39 @@ const path = require("path");
 
 // Serve Admin Dashboard
 app.get('/admin/adminDashboard', (req, res) => {
-  res.sendFile(path.join(__dirname, '../frontend/Admin/adminDashboard.html'));
+  res.sendFile(path.join(__dirname, 'frontend/Admin/adminDashboard.html'));
 });
 
 // Serve Student Dashboard
 app.get('/student/studentDashboard', (req, res) => {
-  res.sendFile(path.join(__dirname, '../frontend/student/studentDashboard.html'));
+  res.sendFile(path.join(__dirname, 'frontend/student/studentDashboard.html'));
 });
+
+// Admin Pages
 app.get('/admin/trackExpense', (req, res) => {
-  res.sendFile(path.join(__dirname, '../frontend/Admin/trackExpense.html'));
+  res.sendFile(path.join(__dirname, 'frontend/Admin/trackExpense.html'));
 });
 app.get('/admin/viewRegisteredStudents', (req, res) => {
-  res.sendFile(path.join(__dirname, '../frontend/Admin/viewRegisteredStudents.html'));
+  res.sendFile(path.join(__dirname, 'frontend/Admin/viewRegisteredStudents.html'));
 });
+
+// Organizer Pages
 app.get('/organizer/organizerDashboard', (req, res) => {
-  res.sendFile(path.join(__dirname, '../frontend/organizer/organizerDashboard.html'));
+  res.sendFile(path.join(__dirname, 'frontend/organizer/organizerDashboard.html'));
 });
 app.get('/organizer/Edit', (req, res) => {
-  res.sendFile(path.join(__dirname, '../frontend/organizer/Edit.html'));
+  res.sendFile(path.join(__dirname, 'frontend/organizer/Edit.html'));
 });
 app.get('/organizer/createevent', (req, res) => {
-  res.sendFile(path.join(__dirname, '../frontend/organizer/createevent.html'));
+  res.sendFile(path.join(__dirname, 'frontend/organizer/createevent.html'));
 });
 app.get('/organizer/trackExpense', (req, res) => {
-  res.sendFile(path.join(__dirname, '../frontend/organizer/trackExpense.html'));
+  res.sendFile(path.join(__dirname, 'frontend/organizer/trackExpense.html'));
 });
 app.get('/organizer/viewRegisteredStudents', (req, res) => {
-  res.sendFile(path.join(__dirname, '../frontend/organizer/viewRegisteredStudents.html'));
+  res.sendFile(path.join(__dirname, 'frontend/organizer/viewRegisteredStudents.html'));
 });
+
 // API routes (like /register, /login)
 app.use(express.json());
 // your login/register logic here...
