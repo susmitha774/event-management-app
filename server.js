@@ -13,9 +13,41 @@ app.use(express.urlencoded({ extended: true }));
 const JWT_SECRET = process.env.JWT_SECRET || "your_jwt_secret";
 const path = require("path");
 
-// Serve frontend static files
-app.use(express.static(path.join(__dirname, '../frontend')));
+// Serve login page on root
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend', 'login.html'));
+});
 
+// Serve Admin Dashboard
+app.get('/admin/adminDashboard', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/Admin/adminDashboard.html'));
+});
+
+// Serve Student Dashboard
+app.get('/student/studentDashboard', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/student/studentDashboard.html'));
+});
+app.get('/admin/trackExpense', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/Admin/trackExpense.html'));
+});
+app.get('/admin/viewRegisteredStudents', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/Admin/viewRegisteredStudents.html'));
+});
+app.get('/organizer/organizerDashboard', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/organizer/organizerDashboard.html'));
+});
+app.get('/organizer/Edit', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/organizer/Edit.html'));
+});
+app.get('/organizer/createevent', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/organizer/createevent.html'));
+});
+app.get('/organizer/trackExpense', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/organizer/trackExpense.html'));
+});
+app.get('/organizer/viewRegisteredStudents', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/organizer/viewRegisteredStudents.html'));
+});
 // API routes (like /register, /login)
 app.use(express.json());
 // your login/register logic here...
