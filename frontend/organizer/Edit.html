@@ -198,7 +198,7 @@
         return;
     }
 
-    fetch(`http://localhost:3000/get-event/${eventId}`, {
+    fetch(`/${eventId}`, {
         method: "GET",
         headers: { "Authorization": `Bearer ${token}` }
     })
@@ -236,7 +236,7 @@ document.getElementById("editEventForm").addEventListener("submit", async functi
     };
 
     try {
-        const response = await fetch(`http://localhost:3000/update-event/${eventId}`, {
+        const response = await fetch(`/update-event/${eventId}`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
