@@ -229,7 +229,45 @@
                     alert("The venue is already booked for this date.Please choose another");
                     return;
                 }
-    
+                console.log("🟢 Preparing to send event data...");
+
+console.log("➡️ Token:", token);
+console.log("➡️ Event Data:", eventData);
+
+try {
+    const response = await fetch("/create-event", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify(eventData)
+    });
+
+    console.log("🔵 Response Status:", response.status);
+    const resultText = await response.text();
+    console.log("🔵 Raw Response Text:", resultText);
+
+    let result;
+    try {
+        result = JSON.parse(resultText);
+    } catch (e) {
+        console.error("❌ Failed to parse JSON:", e);
+        return alert("Server returned an invalid response.");
+    }
+
+    if (response.ok) {
+        alert("Event created successfully.");
+        window.location.href = "organizerDashboard.html";
+    } else {
+        console.error("🔴 Server Error Response:", result);
+        alert(`Server responded with error: ${result.message || "Unknown error"}`);
+    }
+} catch (error) {
+    console.error("🔥 Fetch Crash:", error);
+    alert("An error occurred while creating the event.");
+}
+
                 // Step 3: If no conflict, proceed to create event
                 const response = await fetch("/create-event", {
                     method: "POST",
