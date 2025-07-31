@@ -179,7 +179,7 @@
     try {
         console.log("Fetching expenses for event:", currentEventId);
         
-        const response = await fetch(`http://localhost:3000/expenses/${currentEventId}`);
+        const response = await fetch(`/expenses/${currentEventId}`);
 
         // Check for HTTP errors
         if (!response.ok) {
@@ -216,7 +216,7 @@
     }
 
     try {
-        const response = await fetch("http://localhost:3000/add-expense", {
+        const response = await fetch("/add-expense", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -285,7 +285,7 @@ async function updateTotals() {
         // Fetch data from backend with error handling
         let response;
         try {
-            response = await fetch(`http://localhost:3000/expenses/totals/${currentEventId}`);
+            response = await fetch(`/expenses/totals/${currentEventId}`);
         } catch (networkError) {
             console.error("Network error:", networkError);
             alert("Network issue: Unable to fetch budget details.");
@@ -338,7 +338,7 @@ async function deleteExpense(expenseId) {
     if (!confirm("Are you sure you want to delete this expense?")) return;
 
     try {
-        const response = await fetch(`http://localhost:3000/delete-expense/${expenseId}`, {
+        const response = await fetch(`/delete-expense/${expenseId}`, {
             method: "DELETE",
             headers: {
                 "Authorization": `Bearer ${localStorage.getItem("token")}`
@@ -384,7 +384,7 @@ async function deleteExpense(expenseId) {
         }
 
         const token = localStorage.getItem("token");
-        const response = await fetch(`http://localhost:3000/expenses/${eventId}`, {
+        const response = await fetch(`/expenses/${eventId}`, {
             headers: {
                 "Authorization": `Bearer ${token}`
             }
