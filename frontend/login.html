@@ -336,11 +336,11 @@
                         alert(`Welcome, ${data.name}!`);
 
                         if (data.role.toLowerCase() === "admin") {
-                            window.location.href = "/Admin/adminDashboard.html";
+                            window.location.href = "Admin/adminDashboard.html";
                         } else if (data.role.toLowerCase() === "organizer") {
-                            window.location.href = "/organizer/organizerDashboard.html";
+                            window.location.href = "organizer/organizerDashboard.html";
                         } else {
-                            window.location.href = "/student/studentDashboard.html";
+                            window.location.href = "student/studentDashboard.html";
                         }
                     } else {
                         alert(data.message || "Invalid response from server.");
