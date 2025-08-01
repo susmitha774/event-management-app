@@ -205,7 +205,9 @@
     .then(response => response.json())
     .then(event => {
         document.getElementById("eventName").value = event.event_name;
-        document.getElementById("eventDate").value = event.date_time;
+        const isoDate = new Date(event.date_time);
+        const formatted = isoDate.toISOString().slice(0, 16);  // ✅ RIGHT FORMAT
+        document.getElementById("eventDate").value = formatted;
         document.getElementById("venue").value = event.venue;
         document.getElementById("description").value = event.description;
         document.getElementById("maxStudents").value = event.max_students;
