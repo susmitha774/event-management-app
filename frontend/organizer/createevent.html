@@ -188,12 +188,7 @@
     
             const eventData = {
                 event_name: document.getElementById("eventName").value,
-                const dateInput = document.getElementById("eventDate").value;
-                const isoDate = new Date(dateInput);
-                const formattedDate = new Date(isoDate.getTime() - isoDate.getTimezoneOffset() * 60000).toISOString();
-
-                date_time: formattedDate,
-
+                date_time: document.getElementById("eventDate").value,
                 venue: finalVenue,
                 description: document.getElementById("description").value,
                 max_students: document.getElementById("maxStudents").value,
