@@ -205,9 +205,10 @@
     .then(response => response.json())
     .then(event => {
         document.getElementById("eventName").value = event.event_name;
-        const isoDate = new Date(event.date_time);
-        const formatted = isoDate.toISOString().slice(0, 16);  // ✅ RIGHT FORMAT
-        document.getElementById("eventDate").value = formatted;
+        const dt = new Date(event.date_time);
+        const offset = dt.getTimezoneOffset();
+        const local = new Date(dt.getTime() - offset * 60000).toISOString().slice(0, 16);
+        document.getElementById("eventDate").value = local;
         document.getElementById("venue").value = event.venue;
         document.getElementById("description").value = event.description;
         document.getElementById("maxStudents").value = event.max_students;
