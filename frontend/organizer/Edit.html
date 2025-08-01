@@ -198,7 +198,7 @@
         return;
     }
 
-    fetch(`/${eventId}`, {
+    fetch(`/event/${eventId}`, {
         method: "GET",
         headers: { "Authorization": `Bearer ${token}` }
     })
