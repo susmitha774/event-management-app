@@ -208,7 +208,7 @@
     
             try {
                 // Step 1: Fetch existing events
-                const eventsResponse = await fetch("events", {
+                const eventsResponse = await fetch("/events", {
                     method: "GET",
                     headers: {
                         "Authorization": `Bearer ${token}`,
